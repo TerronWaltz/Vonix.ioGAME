@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOnix.io</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #002366);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        #intro {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            transition: opacity 1s ease;
+        }
+
+        #intro.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #logo {
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px #87CEEB, 0 0 40px #002366;
+            animation: pulse 2s ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        #content {
+            display: none;
+            text-align: center;
+            z-index: 1;
+        }
+
+        #content.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin: 10px 0 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background: #002366;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #87CEEB;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro" onclick="hideIntro()">
+        <div id="logo">VOnix.io</div>
+    </div>
+
+    <div id="content">
+        <h1>¡Bienvenido a VOnix.io!</h1>
+        <p>Prepárate para un juego impresionante que desafía tus habilidades.</p>
+        <button onclick="startGame()">Jugar Ahora</button>
+    </div>
+
+    <canvas id="particles"></canvas>
+
+    <audio id="introSound" src="intro-sound.mp3"></audio>
+
+    <script>
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particlesArray = [];
+        const bigParticlesArray = [];
+        const colors = ['#FF4500', '#1E90FF', '#32CD32', '#FFD700', '#FF69B4'];
+
+        class Particle {
+            constructor(sizeMultiplier = 1) {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = (Math.random() * 5 + 1) * sizeMultiplier;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 200; i++) {
+                particlesArray.push(new Particle());
+            }
+            for (let i = 0; i < 5; i++) {
+                bigParticlesArray.push(new Particle(5));
+            }
+        }
+
+        function handleParticles() {
+            particlesArray.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+
+                bigParticlesArray.forEach((bigParticle) => {
+                    const dx = particle.x - bigParticle.x;
+                    const dy = particle.y - bigParticle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < bigParticle.size) {
+                        particlesArray.splice(index, 1);
+                    }
+                });
+            });
+
+            bigParticlesArray.forEach((bigParticle) => {
+                bigParticle.update();
+                bigParticle.draw();
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            handleParticles();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        function hideIntro() {
+            const intro = document.getElementById('intro');
+            const content = document.getElementById('content');
+
+            intro.classList.add('fade-out');
+            setTimeout(() => {
+                intro.style.display = 'none';
+                content.classList.add('active');
+            }, 1000);
+        }
+
+        function startGame() {
+            alert('¡Comienza el juego!'); // Aquí puedes redirigir al juego real.
+        }
+
+        init();
+        animate();
+
+        window.onload = () => {
+            const introSound = document.getElementById('introSound');
+            introSound.play();
+        };
+    </script>
+</body>
+</html>
