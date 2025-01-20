@@ -9,7 +9,7 @@
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #87CEEB, #002366);
+            background: linear-gradient(to bottom, #035677, #000d1a); /* Azul más oscuro y azul intermedio */
             color: white;
             display: flex;
             justify-content: center;
@@ -35,17 +35,44 @@
             pointer-events: none;
         }
 
-        #logo {
-            font-size: 4rem;
+        #logo-container {
+            text-align: center;
+            font-size: 6rem; /* Ajuste del tamaño de 'Vonix.io' */
             font-weight: bold;
-            text-shadow: 0 0 20px #87CEEB, 0 0 40px #002366;
-            animation: pulse 2s ease-in-out;
             cursor: pointer;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        #logo-container h1 {
+            font-size: 2rem; /* Aumento del tamaño del texto debajo de 'Vonix.io' */
+            margin: 10px 0 0;
+        }
+
+        #logo-container p {
+            font-size: 1.2rem; /* Aumento del tamaño de la frase debajo */
+            margin-top: 10px;
+        }
+
+        #logo {
+            font-size: 6rem; /* Tamaño de 'Vonix.io' */
+            color: #fff;
+            animation: glowingText 1.5s infinite alternate;
+            cursor: pointer;
+            text-shadow: 0 0 10px #00b3b3, 0 0 20px #00b3b3, 0 0 30px #00b3b3, 0 0 40px #00b3b3, 0 0 50px #00b3b3, 0 0 75px #00b3b3;
+        }
+
+        @keyframes glowingText {
+            0% {
+                text-shadow: 0 0 10px #00b3b3, 0 0 20px #00b3b3, 0 0 30px #00b3b3, 0 0 40px #00b3b3, 0 0 50px #00b3b3, 0 0 75px #00b3b3;
+                color: #fff;
+            }
+            50% {
+                text-shadow: 0 0 20px #1e90ff, 0 0 30px #1e90ff, 0 0 40px #1e90ff, 0 0 50px #1e90ff, 0 0 60px #1e90ff, 0 0 80px #1e90ff;
+                color: #fff;
+            }
+            100% {
+                text-shadow: 0 0 30px #ff4500, 0 0 40px #ff4500, 0 0 50px #ff4500, 0 0 60px #ff4500, 0 0 70px #ff4500, 0 0 100px #ff4500;
+                color: #fff;
+            }
         }
 
         #content {
@@ -56,31 +83,11 @@
 
         #content.active {
             display: block;
+            animation: fadeIn 2s ease-out; /* Animación de aparición */
         }
 
-        h1 {
-            font-size: 3rem;
-            margin: 0;
-        }
-
-        p {
-            font-size: 1.2rem;
-            margin: 10px 0 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            color: white;
-            background: #002366;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #87CEEB;
+        #content.fade-out {
+            animation: fadeOut 2s ease-out; /* Animación de desvanecimiento */
         }
 
         canvas {
@@ -88,18 +95,48 @@
             top: 0;
             left: 0;
         }
+
+        /* Estilo para el texto animado "Click on the screen" */
+        #clickText {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem; /* Aumento del tamaño para hacerlo más visible */
+            font-weight: bold;
+            color: #FFFFFF;
+            animation: fadeInOut 3s infinite;
+            text-align: right;
+            z-index: 3; /* Asegura que el texto esté por encima de otros elementos */
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="intro" onclick="hideIntro()">
-        <div id="logo">VOnix.io</div>
+        <div id="logo-container">
+            <div id="logo">VOnix.io</div>
+            <h1>¡Bienvenido a VOnix.io!</h1>
+            <p>Prepárate para un juego impresionante que desafía tus habilidades.</p>
+        </div>
     </div>
 
     <div id="content">
-        <h1>¡Bienvenido a VOnix.io!</h1>
-        <p>Prepárate para un juego impresionante que desafía tus habilidades.</p>
-        <button onclick="startGame()">Jugar Ahora</button>
+        <!-- Menú del juego eliminado -->
     </div>
+
+    <!-- Texto animado "Click on the screen" -->
+    <div id="clickText">Click on the screen</div>
 
     <canvas id="particles"></canvas>
 
@@ -182,27 +219,18 @@
         });
 
         function hideIntro() {
-            const intro = document.getElementById('intro');
-            const content = document.getElementById('content');
-
-            intro.classList.add('fade-out');
-            setTimeout(() => {
-                intro.style.display = 'none';
-                content.classList.add('active');
-            }, 1000);
+            document.getElementById('intro').classList.add('fade-out');
+            document.getElementById('content').classList.add('active');
         }
 
-        function startGame() {
-            alert('¡Comienza el juego!'); // Aquí puedes redirigir al juego real.
-        }
+        // Evento para hacer desaparecer el texto "Click on the screen"
+        document.body.addEventListener('click', function() {
+            const clickText = document.getElementById('clickText');
+            clickText.style.display = 'none'; // Elimina el texto al hacer clic
+        });
 
         init();
         animate();
-
-        window.onload = () => {
-            const introSound = document.getElementById('introSound');
-            introSound.play();
-        };
     </script>
 </body>
 </html>
